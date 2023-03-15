@@ -8,5 +8,5 @@ groups:
     labels:
       severity: critical
     annotations:
-      instance: "{{ $labels.instance }}"
+      summary: "服务异常,实例:{{ $labels.instance }}"
       description: "{{ $labels.job }} 服务已关闭"
