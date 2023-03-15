@@ -26,3 +26,9 @@ receivers:
   #收邮件的邮箱
   email_configs:
   - to: 'cdring@163.com'
+inhibit_rules:
+ - source_match:
+     severity: 'critical'
+   target_match:
+     severity: 'warning'
+   equal: ['alertname', 'dev', 'instance']
