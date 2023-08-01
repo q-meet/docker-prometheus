@@ -1,0 +1,23 @@
+version: '3.3'
+
+services:
+  mysqld-exporter:
+    image: prom/mysqld-exporter:latest@sha256:c26d0213b4862eba03d077ea1928f9480d61bd8c7448b3a4c3015e1674cf32fd
+    container_name: mysqld-exporter
+    restart: always
+    volumes:
+        - /etc/localtime:/etc/localtime:ro
+        - ./.my.cnf:/.my.cnf:rw
+    command:
+        - '--collect.info_schema.processlist'
+        - '--collect.info_schema.innodb_metrics'
+        - '--collect.info_schema.tablestats'
+        - '--collect.info_schema.tables'
+        - '--collect.info_schema.userstats'
+        - '--collect.engine_innodb_status'
+    extra_hosts:
+        - "host.docker.internal:host-gateway"
+    environment:
+      - DATA_SOURCE_NAME=exporter:password@(host.docker.internal:3307/)
+    ports:
+      - 9104:9104

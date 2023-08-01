@@ -1,0 +1,28 @@
+version: '3.6'
+services:
+  flask-consul:
+    image: swr.cn-south-1.myhuaweicloud.com/starsl.cn/flask-consul:latest
+    container_name: flask-consul
+    hostname: flask-consul
+    restart: always
+    volumes:
+      - /usr/share/zoneinfo/PRC:/etc/localtime
+    extra_hosts:
+        - "host.docker.internal:host-gateway"
+    environment:
+      consul_token: xxxxx-xxxxx-xxxxx
+      consul_url: http://host.docker.internal:8500/v1
+      admin_passwd: xxxxxxxx
+      log_level: INFO
+
+  nginx-consul:
+    image: swr.cn-south-1.myhuaweicloud.com/starsl.cn/nginx-consul:latest
+    container_name: nginx-consul
+    hostname: nginx-consul
+    restart: always
+    ports:
+      - "1026:1026"
+    volumes:
+      - /usr/share/zoneinfo/PRC:/etc/localtime
+    depends_on:
+      - flask-consul
