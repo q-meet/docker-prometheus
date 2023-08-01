@@ -1,5 +1,4 @@
 version: '3.3'
-
 volumes:
   prometheus_data: {}
   grafana_data: {}
@@ -15,8 +14,8 @@ services:
     restart: always
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ./prometheus/:/etc/prometheus/
-      - prometheus_data:/prometheus
+      - ./prometheus_v/prometheus/etc/prometheus:/etc/prometheus/
+      - ./prometheus_v/prometheus/data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -47,7 +46,7 @@ services:
     restart: always
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ./alertmanager/:/etc/alertmanager/
+      - ./prometheus_v/alertmanager/:/etc/alertmanager/
     command:
       - '--config.file=/etc/alertmanager/config.yml'
       - '--storage.path=/alertmanager'
@@ -59,19 +58,22 @@ services:
       - 9093:9093
 
   cadvisor:
-    image: google/cadvisor:latest
+    image: gcr.io/cadvisor/cadvisor-arm:v0.47.2
     container_name: cadvisor
     restart: always
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /:/rootfs:ro
-      - /var/run:/var/run:rw
+      - /var/run:/var/run:ro
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
     networks:
       - monitoring
     expose:
       - '8080'
+    ports:
+      - 28080:8080
 
   node_exporter:
     image: prom/node-exporter:v1.5.0
@@ -83,7 +85,7 @@ services:
       - /sys:/host/sys:ro
       - /:/rootfs:ro
     command: 
-      - '--path.procfs=/host/proc' 
+      - '--path.procfs=/host/proc'
       - '--path.sysfs=/host/sys'
       - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc|rootfs/var/lib/docker)($$|/)'
     networks:
@@ -97,8 +99,8 @@ services:
     restart: always
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - grafana_data:/var/lib/grafana
-      - ./grafana/provisioning/:/etc/grafana/provisioning/
+      - ./prometheus_v/grafana/data:/var/lib/grafana
+      - ./prometheus_v/grafana/provisioning/:/etc/grafana/provisioning/
     env_file:
       - ./grafana/config.monitoring
     networks:
