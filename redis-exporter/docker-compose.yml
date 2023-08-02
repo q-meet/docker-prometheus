@@ -1,0 +1,15 @@
+version: '3.3'
+
+services:
+  reids-exporter:
+    image: oliver006/redis_exporter
+    container_name: redis_exporter
+    restart: always
+    environment: 
+        REDIS_ADDR: "redis://host.docker.internal:6379" # redis://localhost:6379
+        REDIS_USER: ""
+        REDIS_PASSWORD: ""
+    extra_hosts:
+        - "host.docker.internal:host-gateway"
+    ports:
+      - 9121:9121
