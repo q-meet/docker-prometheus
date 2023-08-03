@@ -1,0 +1,11 @@
+version: "3.3"
+
+services:
+  blackbox_exporter:
+    image: prom/blackbox-exporter
+    container_name: blackbox_exporter
+    restart: always
+    volumes:
+      - ./:/ect/blackbox_exporter
+    ports:
+      - 9115:9115
