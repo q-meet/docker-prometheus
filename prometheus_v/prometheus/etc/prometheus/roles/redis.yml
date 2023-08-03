@@ -1,0 +1,19 @@
+groups:
+  - name: "redis-exporter"
+    rules:
+      - alert: redisDown
+        expr: redis_up == 0
+        for: 15s
+        labels:
+          severity: critical
+        annotations:
+          summary: "redis 异常,实例:{{ $labels.instance }}"
+          description: " {{ $labels.job }} redis 已关闭"
+      - alert: RedisRejectedConnections
+        expr: increase(redis_rejected_connections_total[1m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: "redis 有拒绝连接,实例:{{ $labels.instance }}"
+          description: " {{ $value }} 与redis 的某些连接被拒绝"

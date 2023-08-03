@@ -1,0 +1,17 @@
+version: '3.3'
+
+services:
+  reids-exporter:
+    image: kbudde/rabbitmq-exporter
+    container_name: rabbitmq-exporter
+    restart: always
+    environment: 
+        RABBIT_URL: "http://host.docker.internal:15672"
+        RABBIT_USER: "user"
+        RABBIT_PASSWORD: "password"
+        RABBIT_PORT: "9419"
+        OUTPUT_FORMAT: "JSON"
+    extra_hosts:
+        - "host.docker.internal:host-gateway"
+    ports:
+      - 9419:9419

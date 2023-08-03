@@ -1,0 +1,13 @@
+version: '3.3'
+
+services:
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:0.11
+    container_name: nginx_exporter
+    restart: always
+    command:
+        - '-nginx.scrape-uri=http://host.docker.internal/stub_status'
+    extra_hosts:
+        - "host.docker.internal:host-gateway"
+    ports:
+      - 9113:9113

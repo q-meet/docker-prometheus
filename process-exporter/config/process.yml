@@ -1,0 +1,5 @@
+process_names:
+  - name: "{{.Come}}" # 匹配模版
+    cmdline:
+      - ".+" # 匹配所有名称
+      # - "nginx" #唯一标识

@@ -1,0 +1,100 @@
+# 全局配置
+global:
+  scrape_interval: 15s # 将搜刮间隔设置为每15秒一次。默认是每1分钟一次。
+  evaluation_interval: 15s # 每15秒评估一次规则。默认是每1分钟一次。
+
+# Alertmanager 配置
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ["alertmanager:9093"]
+
+# 报警(触发器)配置
+rule_files:
+  - "alert.yml"
+  - "roles/*.yml"
+
+# 搜刮配置
+scrape_configs:
+  - job_name: "prometheus"
+    # 覆盖全局默认值，每15秒从该作业中刮取一次目标
+    scrape_interval: 15s
+    static_configs:
+      - targets: ["localhost:9090"]
+  - job_name: "alertmanager"
+    scrape_interval: 15s
+    static_configs:
+      - targets: ["alertmanager:9093"]
+  - job_name: "cadvisor"
+    scrape_interval: 15s
+    static_configs:
+      - targets: ["cadvisor:8080"]
+        labels:
+          instance: Prometheus服务器
+
+  - job_name: "node-exporter"
+    scrape_interval: 15s
+    static_configs:
+      - targets: ["node_exporter:9100"]
+        labels:
+          instance: Prometheus服务器
+      - targets: ["101.34.47.227:9100"]
+        labels:
+          instance: test服务器
+  - job_name: "mysql-exporter"
+    scrape_interval: 15s
+    static_configs:
+      - targets: ["host.docker.internal:9104"]
+        labels:
+          instance: 本地服务器
+
+  - job_name: "nginx-exporter"
+    scrape_interval: 15s
+    static_configs:
+      - targets: ["host.docker.internal:9113"]
+        labels:
+          instance: 本地服务器
+      - targets: ["101.34.47.227:9113"]
+        labels:
+          instance: test服务器
+
+  - job_name: "reids-exporter"
+    scrape_interval: 15s
+    static_configs:
+      - targets: ["host.docker.internal:9121"]
+        labels:
+          instance: 本地服务器
+      - targets: ["101.34.47.227:9121"]
+        labels:
+          instance: test服务器
+
+  - job_name: "rabbitmq-exporter"
+    scrape_interval: 0m
+    static_configs:
+      - targets: ["host.docker.internal:9419"]
+        labels:
+          instance: 本地服务器
+      - targets: ["101.34.47.227:9419"]
+        labels:
+          instance: test服务器
+
+  - job_name: "mongodb-exporter"
+    scrape_interval: 0m
+    static_configs:
+      - targets: ["host.docker.internal:9216"]
+        labels:
+          instance: 本地服务器
+      - targets: ["101.34.47.227:9216"]
+        labels:
+          instance: test服务器
+
+  - job_name: "process-exporter"
+    scrape_interval: 30s
+    scrape_timeout: 15s
+    static_configs:
+      - targets: ["host.docker.internal:9256"]
+        labels:
+          instance: 本地服务器
+      - targets: ["101.34.47.227:9256"]
+        labels:
+          instance: test服务器

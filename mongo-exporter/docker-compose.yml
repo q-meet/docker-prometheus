@@ -1,0 +1,39 @@
+version: '3.3'
+
+services:
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: exporter
+      MONGO_INITDB_ROOT_PASSWORD: password
+    ports:
+      - 27017:27017
+
+  mongodb_exporter:
+    image: bitnami/mongodb-exporter:latest
+    container_name: mongodb_exporter
+    restart: always
+    command:
+        - '--collect-all'
+        - '--compatible-mode'
+    extra_hosts:
+        - "host.docker.internal:host-gateway"
+    environment:
+       $MONGODB_URI: "mongodb://exporter:password@host.docker.internal:27017/admin?ssl=false"
+    ports:
+      - 9216:9216
+    depends_on:
+      - mongo
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 9217:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: exporter
+      ME_CONFIG_MONGODB_ADMINPASSWORD: password
+      ME_CONFIG_MONGODB_URL: mongodb://exporter:password@host.docker.internal:27017/
+    depends_on:
+      - mongo

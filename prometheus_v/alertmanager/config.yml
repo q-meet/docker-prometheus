@@ -10,6 +10,8 @@ global:
   #进行tls验证
   smtp_require_tls: false
 
+templates:
+  - "/etc/alertmanager/template/*.tmpl"
 route:
   group_by: ["alertname"]
   # 当收到告警的时候，等待group_wait配置的时间，看是否还有告警，如果有就一起发出去
@@ -26,6 +28,8 @@ receivers:
     #收邮件的邮箱
     email_configs:
       - to: "meet_happy@163.com"
+        html: '{{ template "email.html" . }}'
+        send_resolved: true
 inhibit_rules:
   - source_match:
       severity: "critical"

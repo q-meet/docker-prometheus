@@ -1,0 +1,11 @@
+groups:
+  - name: "nginx-exporter"
+    rules:
+      - alert: NginxDown
+        expr: nginx_up == 0
+        for: 15s
+        labels:
+          severity: critical
+        annotations:
+          summary: "nginx 异常,实例:{{ $labels.instance }}"
+          description: " {{ $labels.job }} nginx 已关闭"

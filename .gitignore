@@ -1,2 +1,3 @@
 prometheus_v/grafana/data
 prometheus_v/prometheus/data
+**/data

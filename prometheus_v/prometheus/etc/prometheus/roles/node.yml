@@ -1,0 +1,19 @@
+groups:
+  - name: "node-exporter"
+    rules:
+      - alert: HostConnetrackLimit
+        expr: node_nf_conntrack_entrice / node_nf_conntrak_entries_limit > 0.01
+        for: 15s
+        labels:
+          severity: warning
+        annotations:
+          summary: "异常连接数,实例:{{ $labels.instance }}"
+          description: "连接数过大，当前连接数： {{ $value }}"
+      - alert: HostClockSkew
+        expr: (node_timex_offset_seconds > 0.05)
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "异常时钟偏差,实例:{{ $labels.instance }}"
+          description: "检测到时钟偏差，不同步 值为 {{ $value }}"

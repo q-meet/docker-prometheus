@@ -1,0 +1,27 @@
+groups:
+  - name: "domain"
+    rules:
+      - alert: 域名检测失败
+        expr: domain_probe_success == 0
+        for: 15s
+        labels:
+          severity: warning
+        annotations:
+          summary: "域名异常,实例:{{ $labels.instance }}"
+          description: " {{ $labels.domain }} 检查失效"
+      - alert: 域名过期
+        expr: domain_expiry_days < 100
+        for: 2h
+        labels:
+          severity: warning
+        annotations:
+          summary: "域名异常,实例:{{ $labels.instance }}"
+          description: " {{ $labels.domain }} 将在100天后过期"
+      - alert: 域名过期
+        expr: domain_expiry_days < 10
+        for: 2h
+        labels:
+          severity: page
+        annotations:
+          summary: "域名异常,实例:{{ $labels.instance }}"
+          description: " {{ $labels.domain }} 将在10天后过期"

@@ -102,7 +102,7 @@ services:
       - ./prometheus_v/grafana/data:/var/lib/grafana
       - ./prometheus_v/grafana/provisioning/:/etc/grafana/provisioning/
     env_file:
-      - ./grafana/config.monitoring
+      - ./prometheus_v/grafana/config.monitoring
     networks:
       - monitoring
     links:

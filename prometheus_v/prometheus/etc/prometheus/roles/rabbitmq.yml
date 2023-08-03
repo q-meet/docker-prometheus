@@ -1,0 +1,19 @@
+groups:
+  - name: "rabbitmq-exporter"
+    rules:
+      - alert: RabbitmqDown
+        expr: rabbitmq_up != 1
+        for: 15s
+        labels:
+          severity: High
+        annotations:
+          summary: "Rabbitmq 异常,实例:{{ $labels.instance }}"
+          description: " {{ $labels.job }} 连接不上Rabbitmq"
+      - alert: Rabbitmq有未确定消息
+        expr: rabbitmq_queue_messages_unacknowledged_global > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Rabbitmq有未确定消息,实例:{{ $labels.instance }}"
+          description: "当前值为： {{ $value }} "
