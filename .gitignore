@@ -1,3 +1,4 @@
-prometheus_v/grafana/data
 prometheus_v/prometheus/data
 **/data
+*/*/data/
+prometheus_v/grafana/data

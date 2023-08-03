@@ -25,6 +25,12 @@ scrape_configs:
     scrape_interval: 15s
     static_configs:
       - targets: ["alertmanager:9093"]
+  - job_name: "cadvisor"
+    scrape_interval: 15s
+    static_configs:
+      - targets: ["cadvisor:8080"]
+        labels:
+          instance: Prometheus服务器
 
   # 从 consul拉取数据
   - job_name: "consul_exporter"
@@ -37,22 +43,38 @@ scrape_configs:
         action: keep
       - regex: __meta_consul_service_metadata_(.+)
         action: labelmap
+  # 从 pushgateway 拉取数据
+  - job_name: "pushgateway"
+    honor_labels: true # exporter节点上传数据中的一些标签不会被pushgateway节点的相同标签覆盖
+    static_configs:
+      - targets:
+          - "host.docker.internal:9091"
+        labels:
+          instance: pushgateway
+
+  - job_name: "process-exporter"
+    scrape_interval: 30s
+    scrape_timeout: 15s
+    static_configs:
+      - targets: ["host.docker.internal:9256"]
+        labels:
+          instance: 本地服务器
+      - targets: ["101.34.47.227:9256"]
+        labels:
+          instance: test服务器
 
   # http配置
-  - job_name: "consul-blackbox_http"
+  - job_name: "black_http"
     metrics_path: /probe
     params:
       module: [http_2xx]
-    consul_sd_configs:
-      - server: "host.docker.internal:8500"
-        services: []
+    static_configs:
+      - targets:
+          - https://baidu.com
+          - https://www.163.com
     relabel_configs:
-      - source_labels: [__meta_consul_tags__]
-        target_label: .*blackbox_http.*
-        action: keep
-      - regex: __meta_consul_service_metadata_(.+)
-        action: labelmap
-      - source_labels: [__meta_consul_service_address]
+      - source_labels:
+          - __address__
         target_label: __param_target
       - source_labels: [__param_target]
         target_label: instance
@@ -60,20 +82,19 @@ scrape_configs:
         replacement: host.docker.internal:9115
 
   # tcp检查配置
-  - job_name: "consul-blackbox_tcp"
+  - job_name: "blackbox_tcp"
     metrics_path: /probe
     params:
       module: [tcp_connect]
-    consul_sd_configs:
-      - server: "host.docker.internal:8500"
-        services: []
+    static_configs:
+      - targets:
+          - host.docker.internal:9256
+          - 101.34.47.227:9256
+          - host.docker.internal:3306
+          - 101.34.47.227:3306
     relabel_configs:
-      - source_labels: [__meta_consul_tags__]
-        target_label: .*blackbox_tcp.*
-        action: keep
-      - regex: __meta_consul_service_metadata_(.+)
-        action: labelmap
-      - source_labels: [__meta_consul_service_address]
+      - source_labels:
+          - __address__
         target_label: __param_target
       - source_labels: [__param_target]
         target_label: instance
@@ -81,20 +102,17 @@ scrape_configs:
         replacement: host.docker.internal:9115
 
   # icmp检查配置 ping
-  - job_name: "consul-blackbox_icmp"
+  - job_name: "blackbox_icmp"
     metrics_path: /probe
     params:
       module: [icmp]
-    consul_sd_configs: # 从consul中拉取数据
-      - server: "host.docker.internal:8500"
-        services: []
+    static_configs:
+      - targets:
+          - host.docker.internal
+          - 101.34.47.227
     relabel_configs:
-      - source_labels: [__meta_consul_tags__]
-        target_label: .*blackbox_icmp.*
-        action: keep
-      - regex: __meta_consul_service_metadata_(.+)
-        action: labelmap
-      - source_labels: [__meta_consul_service_address]
+      - source_labels:
+          - __address__
         target_label: __param_target
       - source_labels: [__param_target]
         target_label: instance
@@ -102,21 +120,18 @@ scrape_configs:
         replacement: host.docker.internal:9115
 
   # 域名监控配置
-  - job_name: "consul-blackbox_domain"
-    scrape_interval: 10s
+  - job_name: "domain"
+    scrape_interval: 15s
     metrics_path: /probe
-    consul_sd_configs:
-      - server: "host.docker.internal:8500"
-        services: []
     relabel_configs:
-      - source_labels: [__meta_consul_tags__]
-        target_label: .*domain.*
-        action: keep
-      - regex: __meta_consul_service_metadata_(.+)
-        action: labelmap
-      - source_labels: [__meta_consul_service_address]
+      - source_labels:
+          - __address__
         target_label: __param_target
-      - source_labels: [__param_target]
-        target_label: instance
       - target_label: __address__
         replacement: host.docker.internal:9222
+    static_configs:
+      - targets:
+          - baidu.com
+          - 163.com
+          - baidu.cn
+          - czqlm.top

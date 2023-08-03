@@ -88,9 +88,13 @@ blackbox_exporter
 # 域名监控
 
 docker run -d --name domain_exporter --restart=always -p 9222:9222 caarlos0/domain-exporter
+
+
+# 使用命令行注册consul
+curl -X PUT -d '{"id": "node1", "name": "node_exporter","address": "node_exporter","port": 9100,"tags": ["exporter"],"meta":{"job":"node_exporter","instance":"Prometheus服务器"},"checks": [{"http": "http://host.docker.internal:9100/metrics","interval": "5s"}]}' http://localhost:8500/v1/agent/service/register
 ```
 
-![Alt text](image.png)
+![Alt text](base_config/exporter.png)
 
 ## 基于 consul 的服务发现
 
